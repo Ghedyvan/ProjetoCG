@@ -1,0 +1,4 @@
+repository "ProjetoCG@gvbs_unity@cloud"
+  path "/"
+    br "/main"
+    co "/main"
