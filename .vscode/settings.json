@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "ProjetoCG.sln"
+    "dotnet.defaultSolution": "ProjetoCG.sln",
+    "dotnet.preferCSharpExtension": true
 }
