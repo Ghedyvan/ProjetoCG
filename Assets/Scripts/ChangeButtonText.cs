@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class ChangeButtonText : MonoBehaviour
 {
@@ -7,10 +8,10 @@ public class ChangeButtonText : MonoBehaviour
 
     void Start()
     {
-        Text buttonText = startButton.GetComponentInChildren<Text>();
+        TextMeshProUGUI buttonText = startButton.GetComponentInChildren<TextMeshProUGUI>();
         if (buttonText != null)
         {
-            buttonText.text = "Iniciar Jogo";
+            buttonText.text = "Iniciar Corrida";
         }
-    }
+    }   
 }

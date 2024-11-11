@@ -1,40 +1,155 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject startMenu;
-    public Image backgroundImage; // Referência à imagem de fundo
+    public static GameManager Instance { get; private set; }
+    public bool isGameOver = false;
+
+    [SerializeField] private GameObject menuPanel;
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private GameObject scorePanel;
+    [SerializeField] private Light spotLight;
+    [SerializeField] private GameObject playerCar;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        Time.timeScale = 0f; // Pausa o jogo
-        startMenu.SetActive(true); // Exibe o menu inicial
-        SetBackgroundTransparency(1f); // Torna o fundo visível
-        SetBackgroundFullscreen(); // Ajusta o fundo para fullscreen
+        // Estado inicial
+        menuPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+        scorePanel.SetActive(false);
+        if (spotLight != null)
+            spotLight.enabled = false;
     }
 
     public void StartGame()
     {
-        Debug.Log("Game started");
-        Time.timeScale = 1f; // Retoma o jogo
-        startMenu.SetActive(false); // Esconde o menu inicial
-        SetBackgroundTransparency(0f); // Torna o fundo invisível
+        menuPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
+        scorePanel.SetActive(true);
+        isGameOver = false;
+        Time.timeScale = 1f;
     }
 
-    private void SetBackgroundTransparency(float alpha)
+    public void GameOver()
     {
-        Color color = backgroundImage.color;
-        color.a = alpha;
-        backgroundImage.color = color;
+        isGameOver = true;
+        Time.timeScale = 0f;
+        gameOverPanel.SetActive(true);
+        if (spotLight != null)
+            spotLight.enabled = true;
     }
 
-    private void SetBackgroundFullscreen()
+    public void RestartGame()
     {
-        RectTransform rectTransform = backgroundImage.GetComponent<RectTransform>();
-        rectTransform.anchorMin = new Vector2(0, 0);
-        rectTransform.anchorMax = new Vector2(1, 1);
-        rectTransform.offsetMin = Vector2.zero;
-        rectTransform.offsetMax = Vector2.zero;
+        Debug.Log("RestartGame iniciado no GameManager");
+        
+        // Limpa obstáculos primeiro
+        ClearObstacles();
+        
+        // Reseta UI
+        menuPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
+        scorePanel.SetActive(true);
+        
+        if (spotLight != null)
+            spotLight.enabled = false;
+        
+        // Reseta estado do jogo
+        isGameOver = false;
+        Time.timeScale = 1f;
+        
+        // Reseta pontuação
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.ResetScore();
+
+        // Reseta posição do carro
+        if (playerCar != null)
+        {
+            playerCar.transform.position = new Vector3(0, 0, -8);
+            playerCar.transform.rotation = Quaternion.identity;
+            
+            var rb = playerCar.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.Sleep();
+            }
+            
+            var playerController = playerCar.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                playerController.ResetPlayer();
+            }
+        }
+    }
+
+    private void ClearObstacles()
+    {
+        Debug.Log("Iniciando limpeza de obstáculos");
+        
+        int obstaclesCleared = 0;
+        int numbersCleared = 0;
+        int wrongAnswersCleared = 0;
+
+        // Encontra e destrói todos os obstáculos
+        GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        foreach (GameObject obstacle in obstacles)
+        {
+            DestroyImmediate(obstacle);
+            obstaclesCleared++;
+        }
+
+        GameObject[] numbers = GameObject.FindGameObjectsWithTag("Numero");
+        foreach (GameObject number in numbers)
+        {
+            DestroyImmediate(number);
+            numbersCleared++;
+        }
+
+        GameObject[] wrongAnswers = GameObject.FindGameObjectsWithTag("WrongAnswer");
+        foreach (GameObject wrong in wrongAnswers)
+        {
+            DestroyImmediate(wrong);
+            wrongAnswersCleared++;
+        }
+
+        // Procura por paredes também
+        GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
+        foreach (GameObject wall in walls)
+        {
+            DestroyImmediate(wall);
+        }
+
+        Debug.Log($"Obstáculos removidos: {obstaclesCleared}");
+        Debug.Log($"Números removidos: {numbersCleared}");
+        Debug.Log($"Respostas erradas removidas: {wrongAnswersCleared}");
+    }
+
+    public void ReturnToMenu()
+    {
+        menuPanel.SetActive(true);
+        gameOverPanel.SetActive(false);
+        scorePanel.SetActive(false);
+        if (spotLight != null)
+            spotLight.enabled = false;
+        
+        isGameOver = false;
+        Time.timeScale = 1f;
+        
+        if (ScoreManager.Instance != null)
+            ScoreManager.Instance.ResetScore();
     }
 }

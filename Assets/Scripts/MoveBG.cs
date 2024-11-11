@@ -15,17 +15,21 @@ public class MoveBG : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.position += new Vector3(0, 0, speed);
+        // Verifica se o GameManager existe e se o jogo não está em Game Over
+        if (GameManager.Instance == null || !GameManager.Instance.isGameOver)
+        {
+            transform.position += new Vector3(0, 0, speed);
 
-        if(transform.position.z <= -10f)
-        {
-            Destroy(this.gameObject);
-        }else if(transform.position.z <= 30f)
-        {
-            if(hasInstantiate == false)
+            if(transform.position.z <= -10f)
             {
-                hasInstantiate = true;
-                GameObject obj = Instantiate(this.gameObject, new Vector3(transform.position.x, transform.position.y, 70f), Quaternion.Euler(0, 90, 0));
+                Destroy(this.gameObject);
+            }else if(transform.position.z <= 30f)
+            {
+                if(hasInstantiate == false)
+                {
+                    hasInstantiate = true;
+                    GameObject obj = Instantiate(this.gameObject, new Vector3(transform.position.x, transform.position.y, 70f), Quaternion.Euler(0, 90, 0));
+                }
             }
         }
     }

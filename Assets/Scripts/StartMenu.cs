@@ -2,11 +2,24 @@ using UnityEngine;
 
 public class StartMenu : MonoBehaviour
 {
-    public GameManager gameManager;
+    [SerializeField] private GameManager gameManager;
 
-    public void OnStartButtonPressed()
+    public void StartGame()
     {
-        Debug.Log("Start button pressed");
-        gameManager.StartGame();
+        if (gameManager != null)
+        {
+            gameManager.StartGame();
+            Debug.Log("Jogo iniciado");
+        }
+        else
+        {
+            Debug.LogError("GameManager não encontrado!");
+        }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+        Debug.Log("Jogo fechado");
     }
 }
