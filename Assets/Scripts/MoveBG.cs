@@ -5,7 +5,7 @@ using UnityEngine;
 public class MoveBG : MonoBehaviour
 {
     private bool hasInstantiate = false;
-    private float speed = -0.3f;
+    private float speed = -0.5f;
     // Start is called before the first frame update
     void Start()
     {
@@ -15,21 +15,17 @@ public class MoveBG : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Verifica se o GameManager existe e se o jogo não está em Game Over
-        if (GameManager.Instance == null || !GameManager.Instance.isGameOver)
-        {
-            transform.position += new Vector3(0, 0, speed);
+        transform.position += new Vector3(0, 0, speed);
 
-            if(transform.position.z <= -10f)
+        if(transform.position.z <= -10f)
+        {
+            Destroy(this.gameObject);
+        }else if(transform.position.z <= 30f)
+        {
+            if(hasInstantiate == false)
             {
-                Destroy(this.gameObject);
-            }else if(transform.position.z <= 30f)
-            {
-                if(hasInstantiate == false)
-                {
-                    hasInstantiate = true;
-                    GameObject obj = Instantiate(this.gameObject, new Vector3(transform.position.x, transform.position.y, 70f), Quaternion.Euler(0, 90, 0));
-                }
+                hasInstantiate = true;
+                GameObject obj = Instantiate(this.gameObject, new Vector3(transform.position.x, transform.position.y, 70f), Quaternion.Euler(0, 90, 0));
             }
         }
     }

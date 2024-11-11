@@ -15,26 +15,10 @@ public class GenerateWalls : MonoBehaviour
     private string[] certo = new string[] { "8", "8", "12", "40", "5", "4", "15", "4", "15", "2", "14", "2", "10", "6", "12", "3", "7", "4", "10", "5" };
     private string[] errado = new string[] { "7", "9", "16", "20", "6", "2", "12", "3", "14", "3", "16", "3", "8", "4", "10", "2", "8", "2", "8", "3" };
     private float timer = 0;
-
-    public void ResetGenerator()
-    {
-        timer = 0;
-        
-        // Limpa quaisquer objetos que o gerador tenha criado
-        GameObject[] walls = GameObject.FindGameObjectsWithTag("Wall");
-        foreach (GameObject wall in walls)
-        {
-            DestroyImmediate(wall);
-        }
-        
-        Debug.Log("Gerador de paredes resetado");
-    }
-
     void Start()
     {
-        ResetGenerator();
-    }
 
+    }
     void Update()
     {
         timer += Time.deltaTime;
@@ -45,13 +29,13 @@ public class GenerateWalls : MonoBehaviour
             string correctAnswer = certo[randomIndex];
             string wrongAnswer = errado[randomIndex];
 
-            // Use the equation and answers to set the text on the conta GameObject
-
+            // Instancia os obstáculos
             timer = 0;
             GameObject leftWall = Instantiate(wall, new Vector3(-4.5f, 3, transform.position.z), Quaternion.Euler(0, 0, 0));
             GameObject rightWall = Instantiate(wall, new Vector3(4.5f, 3, transform.position.z), Quaternion.Euler(0, 0, 0));
             GameObject conta = Instantiate(wall, new Vector3(transform.position.x, 10, transform.position.z), Quaternion.Euler(0, 0, 0));
             GameObject cone1 = Instantiate(cone, new Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.Euler(0, 0, 0));
+            
             //Alterar os valores dos números de acordo com o resultado:
             conta.GetComponentInChildren<TMPro.TextMeshPro>().text = equation;
             bool showCorrectAnswerOnLeftWall = UnityEngine.Random.Range(0, 2) == 0;
@@ -73,5 +57,3 @@ public class GenerateWalls : MonoBehaviour
         }
     }
 }
-
-// actualWall possui WallCenter, WallLeftDoor e WallRightDoor, preciso que o Collider delas sejam ativados ou desativados de acordo com variáveis booleanas 1 ou 0

@@ -1,67 +1,82 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
+using TMPro; // Se estiver usando TextMeshPro (recomendado)
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance { get; private set; }
-    
-    [SerializeField] private TextMeshProUGUI scoreText;
-    [SerializeField] private TextMeshProUGUI highScoreText;
-    
+    public static ScoreManager instance; // Singleton para acesso fácil
+    public TextMeshProUGUI scoreText; // Referência ao texto na UI
+    public TextMeshProUGUI highScoreText; // Referência ao texto na UI
     private int currentScore = 0;
-    private int highScore = 0;
-    
-    private void Awake()
+
+    private int highScore;
+
+    [Header("UI Elements")]
+    public GameObject scoreCanvas; // Referência para o objeto pai que contém os textos de pontuação
+
+    void Awake()
     {
-        if (Instance == null)
+        // Garante que só existe uma instância
+        if (instance == null)
         {
-            Instance = this;
+            instance = this;
         }
-        else
-        {
-            Destroy(gameObject);
-        }
-        
-        // Carrega o high score salvo
-        highScore = PlayerPrefs.GetInt("HighScore", 0);
-        UpdateScoreText();
-        UpdateHighScoreText();
+
+        highScore = PlayerPrefs.GetInt("Recorde", 0);
+        UpdateUI();
     }
-    
-    public void AddPoints(int points)
+
+    public int GetCurrentScore()
     {
-        currentScore += points;
-        UpdateScoreText();
-        
-        // Atualiza o high score se necessário
+        return currentScore;
+    }
+
+    public void AddScore(int score)
+    {
+        currentScore += score;
+
+        if(currentScore > highScore)
+        {
+            SaveHighScore();
+        }
+
+        UpdateUI();
+    }
+
+    public void RemoveScore(int score)
+    {
+        currentScore -= score;
+        UpdateUI();
+    }
+
+    void UpdateUI()
+    {
+        scoreText.text = "Pontos: " + currentScore.ToString();
+        highScoreText.text = "Recorde: " + highScore.ToString();
+    }
+
+    public void ResetHighScore()
+    {
+        PlayerPrefs.DeleteKey("Recorde");
+        PlayerPrefs.Save();
+        UpdateUI();
+    }
+
+    // Opcional: Salvar pontuação máxima
+    public void SaveHighScore()
+    {
         if (currentScore > highScore)
         {
-            highScore = currentScore;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            UpdateHighScoreText();
+            PlayerPrefs.SetInt("Recorde", currentScore - 100);
+            PlayerPrefs.Save();
         }
     }
-    
-    private void UpdateScoreText()
+
+    public void ShowScoreUI(bool show)
     {
-        if (scoreText != null)
+        if (scoreCanvas != null)
         {
-            scoreText.text = $"Pontos: {currentScore}";
+            scoreCanvas.SetActive(show);
         }
-    }
-    
-    private void UpdateHighScoreText()
-    {
-        if (highScoreText != null)
-        {
-            highScoreText.text = $"Recorde: {highScore}";
-        }
-    }
-    
-    public void ResetScore()
-    {
-        currentScore = 0;
-        UpdateScoreText();
     }
 }
